@@ -26,7 +26,9 @@ namespace eShopSolution.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyMethod().AllowAnyHeader()));
+
+            services.AddControllers();
             services.AddDbContext<EShopDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DB")));
             services.AddTransient<IPublicProductService, PublicProductService>();
         }
@@ -50,12 +52,11 @@ namespace eShopSolution.WebApp
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseCors("AllowAll");
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
         }
     }
